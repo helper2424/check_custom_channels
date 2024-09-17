@@ -1,0 +1,10 @@
+[package]
+name = "rust_custom_channel"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+log = "0.4"
+
+[target.'cfg(loom)'.dependencies]
+loom = "0.7"
