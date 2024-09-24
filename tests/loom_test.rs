@@ -1,12 +1,16 @@
+#[cfg(loom)]
 use loom::sync::Arc;
+#[cfg(loom)]
 use loom::sync::atomic::Ordering::{Acquire, Release, Relaxed};
+#[cfg(loom)]
 use loom::thread;
 use rust_custom_channel::Buffer;
 
+#[cfg(loom)]
 #[test]
 fn check_buffer() {
     loom::model(|| {
-        let t = Buffer::<i32>::new(3);
+        let t = Buffer::<i32>::new(100);
         let arc = Arc::new(t);
     
         let mut thrs = vec![];
@@ -37,5 +41,7 @@ fn check_buffer() {
         }
 
         assert_eq!(arc.clone().len(), 0);
+
+        drop(arc);
     });
 }

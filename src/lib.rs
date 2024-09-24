@@ -1,5 +1,6 @@
 use std::fmt::Display;
 pub mod sync;
+pub mod abuffer;
 
 use crate::sync::{Mutex, Condvar};
 use log::{debug};
@@ -27,7 +28,7 @@ where T: Display
         let mut vector = self.data.lock().unwrap();
 
         if vector.len() >= vector.capacity() {
-            debug!("acheieved wait in push {} with len {}", &value, vector.len());
+            // debug!("acheieved wait in push {} with len {}", &value, vector.len());
             vector = self.full.wait(vector).unwrap();
         }
 
@@ -39,7 +40,7 @@ where T: Display
        let mut vector = self.data.lock().unwrap();
 
        if vector.len() <= 0 {
-            debug!("acheieved wait in pop");
+            // debug!("acheievedgss wait in pop");
             vector = self.empty.wait(vector).unwrap();
        }
 
@@ -52,5 +53,31 @@ where T: Display
         let vector = self.data.lock().unwrap();
 
         vector.len()
+    }
+}
+
+
+#[cfg(test)]
+mod tests {
+    #[test]
+    fn test_buffer() {
+        let t = super::Buffer::<i32>::new(3);
+
+        t.push(1);
+        t.push(2);
+        t.push(3);
+
+        assert_eq!(t.len(), 3);
+
+        let v = t.pop();
+        assert_eq!(v, Some(3));
+
+        let v = t.pop();
+        assert_eq!(v, Some(2));
+
+        let v = t.pop();
+        assert_eq!(v, Some(1));
+
+        assert_eq!(t.len(), 0);
     }
 }
