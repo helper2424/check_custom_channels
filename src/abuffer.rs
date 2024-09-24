@@ -1,6 +1,7 @@
-use super::sync::{Mutex, Condvar, AtomicUsize, Arc, RefCell, AtomicU8};
+use super::sync::{AtomicUsize, AtomicU8};
 use core::borrow;
 use std::{fmt::Display, vec};
+use std::cell::RefCell;
 
 struct Slot<T>
 where T: Display + Clone
@@ -127,12 +128,12 @@ mod tests {
 
     #[test]
     fn zero_cap() {
-        let buffer = ABuffer::<i32>::new(0);
+        let buffer: ABuffer<i32> = ABuffer::<i32>::new(0);
 
-        assert_eq!(buffer.cap(), 0);
+        assert_eq!(buffer.cap(), 0 as usize);
 
         assert_eq!(buffer.try_push(1), Err(1));
-        assert_eq!(buffer.len(), 0);
+        assert_eq!(buffer.len(), 0 as usize);
         assert_eq!(buffer.try_pop(), None);
     }
 
@@ -164,7 +165,7 @@ mod tests {
         assert_eq!(buffer.try_pop(), Some(1));
         assert_eq!(buffer.try_pop(), Some(2));
         assert_eq!(buffer.try_pop(), Some(3));
-        assert_eq!(buffer.try_pop(), None);
+        assert_eq!(buffer.try_pop(), None::<i32>);
 
         buffer.try_push(4);
 
